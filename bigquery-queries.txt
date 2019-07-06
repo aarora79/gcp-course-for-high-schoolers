@@ -1,0 +1,94 @@
+# count all zipcodes in the dataset
+select count(zipcode) from `bigquery-public-data.census_bureau_usa.population_by_zip_2010` 
+
+# wait, something does not seem right, these are way too many zipcodes
+# why could that be?
+select count(distinct zipcode) from `bigquery-public-data.census_bureau_usa.population_by_zip_2010` 
+
+# ok so a zipcode appears multiple times, can we get a count of how many times a zipcode appears?
+select zipcode, count(zipcode) as number_of_times_it_occurs from `bigquery-public-data.census_bureau_usa.population_by_zip_2010` group by zipcode 
+
+
+# we want to see why does a zipcode appear multiple times, so print all the fields for a particular
+# zipcode as an example. 
+
+# Lets print out the data for Clarksburg 20871 as per the 2010 census
+SELECT
+  *
+FROM
+  `bigquery-public-data.census_bureau_usa.population_by_zip_2010`
+WHERE
+  zipcode = "20871"
+
+# Lets print out the data for Clarksburg 20871 as per the 2000 census
+SELECT
+  *
+FROM
+  `bigquery-public-data.census_bureau_usa.population_by_zip_2000`
+WHERE
+  zipcode = "20871"
+
+# what is the total population of the US as per the 2010 census
+SELECT
+  sum(population)
+FROM
+  `bigquery-public-data.census_bureau_usa.population_by_zip_2010`
+WHERE
+  minimum_age is null and maximum_age is null
+
+# as per the 2000 census
+SELECT
+  sum(population)
+FROM
+  `bigquery-public-data.census_bureau_usa.population_by_zip_2000`
+WHERE
+  minimum_age is null and maximum_age is null
+
+
+# population across each age group, 2010
+SELECT
+  minimum_age,
+  maximum_age,
+  SUM(population)
+FROM
+  `bigquery-public-data.census_bureau_usa.population_by_zip_2010`
+WHERE
+  minimum_age IS NOT NULL
+  AND maximum_age IS NOT NULL
+GROUP BY
+  minimum_age,
+  maximum_age
+
+# population across each age group, 2000
+SELECT
+  minimum_age,
+  maximum_age,
+  SUM(population)
+FROM
+  `bigquery-public-data.census_bureau_usa.population_by_zip_2000`
+WHERE
+  minimum_age IS NOT NULL
+  AND maximum_age IS NOT NULL
+GROUP BY
+  minimum_age,
+  maximum_age
+
+
+# but it would be useful to see which age group has the highest population
+# or more generally just sort the age groups in descending order of the population
+SELECT
+  minimum_age,
+  maximum_age,
+  SUM(population) AS total_population
+FROM
+  `bigquery-public-data.census_bureau_usa.population_by_zip_2010`
+WHERE
+  minimum_age IS NOT NULL
+  AND maximum_age IS NOT NULL
+GROUP BY
+  minimum_age,
+  maximum_age
+ORDER BY
+  total_population DESC
+
+# same with the 2000, do you see any difference
