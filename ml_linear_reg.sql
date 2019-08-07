@@ -51,7 +51,8 @@ FROM
 # better formatted predictions
 SELECT 
  *,
- (predicted_weight_pounds - weight_pounds) AS error 
+ (predicted_weight_pounds - weight_pounds) AS error,
+ ROW_NUMBER() OVER() row_number
  FROM (
 SELECT
   *
